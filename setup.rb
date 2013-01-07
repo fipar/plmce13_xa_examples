@@ -53,9 +53,6 @@ ds2.init
 c1 = ds1.get_connection
 c2 = ds2.get_connection
 
-#btm = TxnSvc.get_transaction_manager
-#btm.begin
-
 @conns = [c1, c2]
 
 begin
@@ -68,11 +65,8 @@ begin
     conn.create_statement.execute_update create_table_transactions
   end 
 
-# btm.commit
  puts "Successfully created sample database"
 rescue
   puts "Something bad happened: " + $!
-#  btm.rollback
 end
 
-#btm.shutdown
