@@ -1,7 +1,7 @@
 #!/usr/local/bin/jruby
 # very simple money transfer XA example
-# will transfer $100 from account 1 on LoweCreditUnion to account 2 on BancoRepublica
-# should succeed with the example data set
+# will attempt to transfer $500 from account 1 on LoweCreditUnion to account 5 on BancoRepublica
+# should fail with the example data set
 
 require 'java'
 require 'config'
@@ -29,21 +29,20 @@ c1 = ds1.get_connection
 c2 = ds2.get_connection
 
 btm = TxnSvc.get_transaction_manager
-
 btm.begin
 
 begin
   puts "Checking source account balance"
-  rs = c1.create_statement.execute_query "SELECT * FROM xa_examples.accounts WHERE id = 1 AND balance > 100 "
-  btm.rollback unless rs.next
+  rs = c1.create_statement.execute_query "SELECT * FROM xa_examples.accounts WHERE id = 1 AND balance > 500 "
+  raise Exception, "Insufficient funds" unless rs.next
   puts "recording withdrawal"
-  c1.create_statement.execute_update "INSERT INTO xa_examples.transactions (account_id,amount) VALUES (1,-100)"
+  c1.create_statement.execute_update "INSERT INTO xa_examples.transactions (account_id,amount) VALUES (1,-500)"
   puts "widthdrawing funds"
-  c1.create_statement.execute_update "UPDATE xa_examples.accounts SET balance = balance - 100 WHERE id = 1"
+  c1.create_statement.execute_update "UPDATE xa_examples.accounts SET balance = balance - 500 WHERE id = 1"
   puts "recording credit"
-  c2.create_statement.execute_update "INSERT INTO xa_examples.transactions (account_id,amount) VALUES (2,100)"
+  c2.create_statement.execute_update "INSERT INTO xa_examples.transactions (account_id,amount) VALUES (5,500)"
   puts "crediting funds"
-  c2.create_statement.execute_update "UPDATE xa_examples.accounts SET balance = balance + 100 WHERE id = 2"
+  c2.create_statement.execute_update "UPDATE xa_examples.accounts SET balance = balance + 500 WHERE id = 5"
   btm.commit
   puts "Successfully finished money transfer"
 rescue
