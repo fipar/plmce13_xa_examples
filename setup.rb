@@ -29,13 +29,16 @@ create_table_transactions = "
    ) Engine=Innodb
 "
 
+example_accounts_c1 = "INSERT INTO xa_examples.accounts VALUES (null,'Ryan Lowe', 100000)"
+example_accounts_c2 = "INSERT INTO xa_examples.accounts VALUES (null,'Marcos Albe', 10), (null,'Fernando Ipar',10)"
+
 BTM = Java::BitronixTm::bitronixTransactionManager
 TxnSvc = Java::BitronixTm::TransactionManagerServices
 PDS = Java::BitronixTmResourceJdbc::PoolingDataSource
 
 ds1 = PDS.new
 ds1.set_class_name Configuration::DB_CONFIG_1["class_name"]
-ds1.set_unique_name 'mysql1'
+ds1.set_unique_name 'LoweCreditUnion'
 ds1.set_max_pool_size 3
 ds1.get_driver_properties.set_property 'url', Configuration::DB_CONFIG_1["url"]
 ds1.set_allow_local_transactions true
@@ -43,7 +46,7 @@ ds1.init
 
 ds2 = PDS.new
 ds2.set_class_name Configuration::DB_CONFIG_2["class_name"]
-ds2.set_unique_name 'mysql2'
+ds2.set_unique_name 'BancoRepublica'
 ds2.set_max_pool_size 3
 ds2.get_driver_properties.set_property 'url', Configuration::DB_CONFIG_2["url"]
 ds2.set_allow_local_transactions true
@@ -64,6 +67,8 @@ begin
     conn.create_statement.execute_update create_table_accounts
     conn.create_statement.execute_update create_table_transactions
   end 
+  c1.create_statement.execute_update example_accounts_c1
+  c2.create_statement.execute_update example_accounts_c2
 
  puts "Successfully created sample database"
 rescue
