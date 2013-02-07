@@ -4,7 +4,6 @@
 .config
 coverage
 InstalledFiles
-lib/bundler/man
 pkg
 rdoc
 spec/reports
@@ -16,6 +15,3 @@ tmp
 _yardoc
 doc/
 .#*
-btm*
-jars
-mysql-*
